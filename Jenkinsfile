@@ -3,8 +3,9 @@ pipeline {
   tools { nodejs "Node_v18" }
 
   environment {
-    APP_NAME = 'toformtask-app'
+    APP_NAME   = 'toformtask-app'
     ARTVERSION = "${env.BUILD_ID}"
+    PM2_HOME   = 'C:\\Users\\raja\\.pm2'   // 👈 Add kiya for same PM2 context
   }
 
   stages {
@@ -18,7 +19,9 @@ pipeline {
       steps {
         script {
           def userInput = input(
-            id: 'ProdApproval', message: 'Deploy to production?', ok: 'Deploy',
+            id: 'ProdApproval',
+            message: 'Deploy to production?',
+            ok: 'Deploy',
             submitter: 'raja'
           )
           echo "Approval received from: ${userInput}"
