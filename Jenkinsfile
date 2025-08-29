@@ -33,12 +33,12 @@ pipeline {
         }
       }
       steps {
-        sh """
-      npm install --unsafe-perm
-      npm run build
-      pm2 delete ${APP_NAME} || true
-      pm2 start node_modules/node-red/red.js --name "${APP_NAME}" -- --userDir ./home
-      pm2 save
+        bat """
+          call npm install --unsafe-perm
+          call npm run build
+          pm2 delete %APP_NAME% || exit 0
+          pm2 start node_modules/node-red/red.js --name "%APP_NAME%" -- --userDir ./home
+          pm2 save
         """
       }
     }
@@ -65,5 +65,5 @@ pipeline {
     failure {
       echo "❌ Build failed"
     } 
- } 
+  }
 }
