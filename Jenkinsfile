@@ -37,7 +37,7 @@ pipeline {
           call npm install --unsafe-perm
           call npm run build
           pm2 delete %APP_NAME% || exit 0
-          pm2 start node_modules/node-red/red.js --name "%APP_NAME%" -- --userDir ./home
+          pm2 start app.js --name "%APP_NAME%"
           pm2 save
         """
       }
