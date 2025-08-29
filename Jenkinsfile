@@ -27,7 +27,6 @@ pipeline {
     }
 
     stage('Deploy to Production') {
-      agent { label 'mobillor-demo' }
       when {
         expression {
           return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+$/
