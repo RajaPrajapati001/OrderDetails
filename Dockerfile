@@ -4,17 +4,17 @@ FROM node:18-alpine
 # Set working directory inside the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json (or yarn.lock)
+# Copy package.json and package-lock.json first
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm install --production
 
-# Copy the rest of your project files
+# Copy the rest of the project
 COPY . .
 
-# Expose port (default React port is 5173)
+# Expose port (agar aapka backend 3000 pe run hota hai)
 EXPOSE 3000
 
-# Start the React development server
-CMD ["npm", "start"]
+# Start the server
+CMD ["node", "app.js"]
