@@ -61,7 +61,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get('/', (req, res) => {
-    res.send("Hello")
+    res.send("Hii")
 })
 
 app.get("/orderInfo", async (req, res) => {
