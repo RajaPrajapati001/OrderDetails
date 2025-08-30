@@ -38,11 +38,11 @@ pipeline {
         bat """
           call npm install --unsafe-perm
 
-  rem 🚀 Restart if exists, else start new
-  pm2 restart "%APP_NAME%" || pm2 start app.js --name "%APP_NAME%"
+pm2 delete "%APP_NAME%" || echo "No existing process to delete"
+pm2 start app.js --name "%APP_NAME%"
 
-  pm2 save
-  pm2 list
+pm2 save
+pm2 list
         """
       }
 }
