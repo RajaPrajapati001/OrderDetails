@@ -36,17 +36,14 @@ pipeline {
   }
  steps {
         bat """
-
-          pm2 delete "%APP_NAME%" || echo "No existing process to delete"
-          pm2 save --force
-          pm2 list
-          call npm install --unsafe-perm
-
-          pm2 start app.js --name "%APP_NAME%"
-
-          pm2 save
-          pm2 list
-        """
+  pm2 delete "%APP_NAME%" --silent
+  pm2 save --force
+  pm2 list
+  call npm install --unsafe-perm
+  pm2 start app.js --name "%APP_NAME%"
+  pm2 save
+  pm2 list
+"""
       }
 }
 
