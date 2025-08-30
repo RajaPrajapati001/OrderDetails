@@ -5,7 +5,6 @@ pipeline {
   environment {
     APP_NAME   = 'toformtask-app'
     ARTVERSION = "${env.BUILD_ID}"
-    PM2_HOME   = 'C:\\Users\\raja\\.pm2'   // 👈 Add kiya for same PM2 context
   }
 
   stages {
@@ -35,26 +34,14 @@ pipeline {
       return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+$/
     }
   }
-  steps {
-    bat """
-      call npm install --unsafe-perm
-
-      rem ✅ Check if app is already running
-      pm2 list | findstr "%APP_NAME%" >nul
-      if %errorlevel%==0 (
-        echo "App %APP_NAME% is running, stopping first..."
-        pm2 stop "%APP_NAME%"
-        pm2 delete "%APP_NAME%"
-      ) else (
-        echo "App %APP_NAME% not running, skipping stop."
-      )
-
-      rem 🚀 Start fresh instance
-      pm2 start app.js --name "%APP_NAME%"
-      pm2 save
-      pm2 list
-    """
-  }
+ steps {
+        bat """
+          call npm install --unsafe-perm
+          pm2 start app.js --name "%APP_NAME%"
+          pm2 save
+          pm2 list
+        """
+      }
 }
 
     stage('Skip Deploy (Not a Tag)') {
