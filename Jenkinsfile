@@ -36,7 +36,7 @@ pipeline {
   }
  steps {
         bat """
-  pm2 delete "%APP_NAME%" --silent
+  pm2 delete "%APP_NAME%" --silent || exit /b 0
   pm2 save --force
   pm2 list
   call npm install --unsafe-perm
