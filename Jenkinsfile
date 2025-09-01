@@ -36,11 +36,10 @@ pipeline {
   }
  steps {
     bat 'pm2 delete "%APP_NAME%" --silent || exit /b 0'
-    bat """
-    call npm install --unsafe-perm
-    pm2 start app.js --name "%APP_NAME%"
-    """
-      }
+    bat 'pm2 save --force'
+    bat 'call npm install --unsafe-perm'
+    bat 'pm2 start app.js --name "%APP_NAME%"'
+    bat 'pm2 save'      }
 }
 
     stage('Skip Deploy (Not a Tag)') {
