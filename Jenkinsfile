@@ -3,12 +3,32 @@ pipeline {
   tools { nodejs "Node_v18" }
 
   environment {
-    APP_NAME   = 'toformtask-app'
+    APP_NAME   = 'editor-demo'
     ARTVERSION = "${env.BUILD_ID}"
   }
-
+   
   stages {
-
+     stage('Deploy to Staging') {
+      // when {
+      //   expression { return env.BRANCH_NAME == "cicd-dev-testing" }
+      // }
+      steps {
+        bat 'pm2 delete "%APP_NAME%" --silent || exit /b 0'
+        bat 'pm2 save --force'
+        withCredentials([file(credentialsId: 'editor-env', variable: 'ENV_FILE')]) {
+          bat '''
+            del .env
+            copy "%ENV_FILE%" .env
+            echo Copied env file for editor build
+          '''
+        }
+        bat 'call npm install --unsafe-perm'
+        // bat 'pm2 start packages/node_modules/node-red/red.js --node-args="--max-old-space-size=1024" -- --userDir ./home/'
+        bat 'pm2 start app.js --name "%APP_NAME%"'
+        bat 'pm2 save'
+      }
+    }
+    
     stage('Approve Production Deployment') {
       when {
         expression { return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+$/ }
@@ -19,7 +39,7 @@ pipeline {
             id: 'ProdApproval',
             message: 'Deploy to production?',
             ok: 'Deploy',
-            submitter: 'raja'
+            submitter: 'admin'
           )
           echo "Approval received from: ${userInput}"
         }
@@ -41,6 +61,7 @@ pipeline {
           '''
         }
         bat 'call npm install --unsafe-perm'
+        // bat 'pm2 start packages/node_modules/node-red/red.js --node-args="--max-old-space-size=1024" -- --userDir ./home/'
         bat 'pm2 start app.js --name "%APP_NAME%"'
         bat 'pm2 save'
       }
