@@ -11,9 +11,7 @@ pipeline {
 
     stage('Approve Production Deployment') {
       when {
-        expression {
-          return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+$/
-        }
+        expression { return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+$/ }
       }
       steps {
         script {
@@ -29,23 +27,29 @@ pipeline {
     }
 
     stage('Deploy to Production') {
-  when {
-    expression {
-      return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+$/
+      when {
+        expression { return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+$/ }
+      }
+      steps {
+        bat 'pm2 delete "%APP_NAME%" --silent || exit /b 0'
+        bat 'pm2 save --force'
+        withCredentials([file(credentialsId: 'editor-env', variable: 'ENV_FILE')]) {
+          bat '''
+            del .env
+            copy "%ENV_FILE%" .env
+            echo Copied env file for editor build
+          '''
+        }
+        bat 'call npm install --unsafe-perm'
+        bat 'pm2 start app.js --name "%APP_NAME%"'
+        bat 'pm2 save'
+      }
     }
-  }
- steps {
-    bat 'pm2 delete "%APP_NAME%" --silent || exit /b 0'
-    bat 'pm2 save --force'
-    bat 'call npm install --unsafe-perm'
-    bat 'pm2 start app.js --name "%APP_NAME%"'
-    bat 'pm2 save'      }
-}
 
     stage('Skip Deploy (Not a Tag)') {
       when {
         not {
-          expression { return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$/ }
+          expression { return env.BRANCH_NAME ==~ /^v\d+\.\d+\.\d+$/ }
         }
       }
       steps {
@@ -63,6 +67,6 @@ pipeline {
     }
     failure {
       echo "❌ Build failed"
-    } 
+    }
   }
 }
